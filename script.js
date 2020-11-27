@@ -16,12 +16,16 @@ var xRotate = 0;
 var yRotate = 0;
 let s;
 
-var left, right, up, down, zoomin, zoomout;
+var density = 0.2;
+
+
+var left, right, up, down, zoomin, zoomout, dup, ddown;
 
 var SMOOTH_AMT = 2;
 
 function setup() {
     //size(640, 480, P3D);
+    frameRate(30);
     canv = createCanvas(windowWidth, windowHeight, WEBGL);
     canv.position(0,0)
     canv.style('z-index', '-1')
@@ -39,7 +43,7 @@ function draw() {
     movement();
     translate(radius * cos(offset) + x, radius / 2 * sin(offset / 2) + y, radius * sin(offset) + z);
     radius = width / 3;
-    for (var i = 0; i < 2 * PI; i += 0.05) {
+    for (var i = 0; i < 2 * PI; i += density) {
         var h = map(noise(i + offset), 0, 1, 0, MAX_HEIGHT);
         strokeWeight(map(h, 0, MAX_HEIGHT, 0, 15));
         stroke(map(h + mouseX / 10, 0, MAX_HEIGHT + width / 10, 0, 255), 255, 255, 120);
@@ -72,6 +76,10 @@ function keyPressed() {
     }else if(key == 'f'){
         let fs = fullscreen();
         fullscreen(!fs);
+    }else if(key == 'z'){
+        dup = true;
+    }else if(key == 'x'){
+        ddown = true;
     }
 
 }
@@ -89,6 +97,10 @@ function keyReleased() {
         zoomin = false;
     } else if (key == 'e') {
         zoomout = false;
+    }else if(key == 'z'){
+        dup = false;
+    }else if(key == 'x'){
+        ddown = false;
     }
 
 }
@@ -108,6 +120,10 @@ function movement() {
         z += speed;
     } else if (zoomout) {
         z -= speed;
+    } else if(dup){
+        density-=0.01;
+    } else if(ddown){
+        density+=0.01;
     }
 
 }

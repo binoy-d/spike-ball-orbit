@@ -5,7 +5,7 @@ var x = 0;
 
 var y = 0;
 
-var z = 0;
+var z = -1000;
 var radius = 200;
 
 var speed = -20;
@@ -43,6 +43,7 @@ function draw() {
         var h = map(noise(i + offset), 0, 1, 0, MAX_HEIGHT);
         strokeWeight(map(h, 0, MAX_HEIGHT, 0, 15));
         stroke(map(h + mouseX / 10, 0, MAX_HEIGHT + width / 10, 0, 255), 255, 255, 120);
+
         line(0, 0, 0, h, 0, 0);
         rotateZ(-map(xRotate, 0, width, 0, 2 * PI));
         rotateX(map(yRotate, 0, width, 0, 2 * PI));
@@ -129,8 +130,8 @@ class Strand {
     }
 
     display() {
+        strokeWeight(5);
         noFill();
-        //stroke the strand
         bezier(this.x, this.y, this.z + mouseX / 5, this.x, this.y + sin(offset) * radius, this.z + this.len, this.x, this.y + this.len, sin(offset / 2) * radius, cos(offset) * radius, width / 5 + 200, z);
 
     }

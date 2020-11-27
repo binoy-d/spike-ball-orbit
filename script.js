@@ -1,3 +1,6 @@
+let mic = 0;
+
+
 var offset = 0;
 var MAX_HEIGHT = 300;
 
@@ -17,8 +20,8 @@ var yRotate = 0;
 let s;
 
 var density = 0.2;
-
-
+let devlist = {}
+var MIC_SENSITIVITY = 8;
 var left, right, up, down, zoomin, zoomout, dup, ddown;
 
 var SMOOTH_AMT = 2;
@@ -33,6 +36,8 @@ function setup() {
     background(0);
     colorMode(HSB);
     s = new Strand(0, 0, 0, MAX_HEIGHT / 4);
+    getAudioContext().suspend();
+
 }
 
 
@@ -41,13 +46,14 @@ function draw() {
     background(0);
     fill(255, 40);
     movement();
+    
     translate(radius * cos(offset) + x, radius / 2 * sin(offset / 2) + y, radius * sin(offset) + z);
     radius = width / 3;
     for (var i = 0; i < 2 * PI; i += density) {
         var h = map(noise(i + offset), 0, 1, 0, MAX_HEIGHT);
         strokeWeight(map(h, 0, MAX_HEIGHT, 0, 15));
         stroke(map(h + mouseX / 10, 0, MAX_HEIGHT + width / 10, 0, 255), 255, 255, 120);
-
+        
         line(0, 0, 0, h, 0, 0);
         rotateZ(-map(xRotate, 0, width, 0, 2 * PI));
         rotateX(map(yRotate, 0, width, 0, 2 * PI));
@@ -80,6 +86,10 @@ function keyPressed() {
         dup = true;
     }else if(key == 'x'){
         ddown = true;
+    }else if(key == 'm'){
+        userStartAudio();
+        mic = new p5.AudioIn();
+        mic.start();
     }
 
 }
@@ -132,7 +142,6 @@ function movement() {
 
 function mouseWheel(event) {
     var e = event.delta;
-    console.log(e);
     delta -= map(e, -700, 700, -0.007, 0.007);
     return false;
 }
@@ -149,8 +158,24 @@ class Strand {
     display() {
         strokeWeight(5);
         noFill();
-        bezier(this.x, this.y, this.z + mouseX / 5, this.x, this.y + sin(offset) * radius, this.z + this.len, this.x, this.y + this.len, sin(offset / 2) * radius, cos(offset) * radius, width / 5 + 200, z);
+        
+        let vol = mic===0?0:mic.getLevel();
+        vol*=MIC_SENSITIVITY;
 
+        let x1 = this.x;
+        let y1 = this.y;
+        let z1 = this.z + mouseX / 5;
+        let x2 = this.x;
+        let y2 = this.y + sin(offset) * radius*vol;
+        let z2 = this.z + this.len;
+        let x3 =  this.x;
+        let y3 =  this.y + this.len;
+        let z3 = sin(offset / 2) * radius*vol;
+        let x4 = cos(offset) * radius*vol;
+        let y4 =  width / 5 + 200;
+        let z4 = 0;
+        
+        bezier(x1, y1, z1,x2, y2, z2,x3,y3, z3, x4,y4, z4);
     }
     sway() {
         this.len = (mouseX + mouseY) / 3 * noise(offset / 5) * 2;
@@ -159,3 +184,6 @@ class Strand {
 function windowResized(){
     resizeCanvas(windowWidth, windowHeight);
 }
+
+
+

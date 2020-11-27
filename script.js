@@ -116,8 +116,9 @@ function movement() {
 
 function mouseWheel(event) {
     var e = event.delta;
-    println(e);
-    delta += map(e, -10, 10, -0.007, 0.007);
+    console.log(e);
+    delta -= map(e, -700, 700, -0.007, 0.007);
+    return false;
 }
 
 

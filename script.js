@@ -18,7 +18,7 @@ let s;
 
 var left, right, up, down, zoomin, zoomout;
 
-var SMOOTH_AMT = 1;
+var SMOOTH_AMT = 2;
 
 function setup() {
     //size(640, 480, P3D);
@@ -47,8 +47,8 @@ function draw() {
         line(0, 0, 0, h, 0, 0);
         rotateZ(-map(xRotate, 0, width, 0, 2 * PI));
         rotateX(map(yRotate, 0, width, 0, 2 * PI));
-        xRotate += (mouseX / 5 - xRotate) / ((width / 1000));
-        yRotate += (mouseY / 5 - yRotate) / ((width / 1000));
+        xRotate += (mouseX / 10 - xRotate) / ((width / SMOOTH_AMT));
+        yRotate += (mouseY / 10 - yRotate) / ((width / SMOOTH_AMT));
         s.display();
         s.sway();
     }

@@ -18,7 +18,7 @@ var delta = 0.01;
 var xRotate = 0;
 var yRotate = 0;
 let s;
-
+let s2;
 var density = 0.2;
 let devlist = {}
 var MIC_SENSITIVITY = 8;
@@ -36,6 +36,7 @@ function setup() {
     background(0);
     colorMode(HSB);
     s = new Strand(0, 0, 0, MAX_HEIGHT / 4);
+    s2 = new Strand(-5, -5, -width/2, MAX_HEIGHT );
     getAudioContext().suspend();
 
 }
@@ -52,13 +53,17 @@ function draw() {
     for (var i = 0; i < 2 * PI; i += density) {
         var h = map(noise(i + offset), 0, 1, 0, MAX_HEIGHT);
         strokeWeight(map(h, 0, MAX_HEIGHT, 0, 15));
-        stroke(map(h + mouseX / 10, 0, MAX_HEIGHT + width / 10, 0, 255), 255, 255, 120);
+        stroke(map(h + mouseX / 10 , 0, MAX_HEIGHT + width / 10, 0, 255), 255, 255, 120);
         
-        line(0, 0, 0, h, 0, 0);
-        rotateZ(-map(xRotate, 0, width, 0, 2 * PI));
-        rotateX(map(yRotate, 0, width, 0, 2 * PI));
-        xRotate += (mouseX / 10 - xRotate) / ((width / SMOOTH_AMT));
-        yRotate += (mouseY / 10 - yRotate) / ((width / SMOOTH_AMT));
+        //line(0, 0, 0, h, 0, 0);
+        //rotateZ(-map(xRotate, 0, width, -2*PI, 2 * PI));
+        
+        rotateX(map(yRotate, 0, width, -2*PI, 2 * PI));
+        xRotate += ((mouseX-width/2) / 10 - xRotate) / ((width / SMOOTH_AMT));
+        yRotate += ((mouseY-height/2) / 10 - yRotate) / ((width / SMOOTH_AMT));
+        s2.display();
+        s2.sway();
+        rotateY(-map(xRotate, 0, width, -2*PI, 2 * PI));
         s.display();
         s.sway();
     }
@@ -171,14 +176,14 @@ class Strand {
         let x3 =  this.x;
         let y3 =  this.y + this.len;
         let z3 = sin(offset / 2) * radius*vol;
-        let x4 = cos(offset) * radius*vol;
+        let x4 = cos(offset) * radius*vol+this.len;
         let y4 =  width / 5 + 200;
         let z4 = 0;
         
         bezier(x1, y1, z1,x2, y2, z2,x3,y3, z3, x4,y4, z4);
     }
     sway() {
-        this.len = (mouseX + mouseY) / 3 * noise(offset / 5) * 2;
+        this.len = (mouseX + mouseY) / 2 * noise(offset / 2) * 2;
     }
 }
 function windowResized(){
